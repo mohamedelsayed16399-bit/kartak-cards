@@ -44,7 +44,7 @@ button.b.wa{background:#16a34a}button.b.g{background:#e7e3f7;color:var(--ink)}
 <div id="editor">
 <div class="card"><h2>١) المناسبة</h2><div class="scroll" id="ocs"></div></div>
 <div class="card"><h2>٢) الشكل</h2><div class="scroll" id="ths"></div>
-<label>الخلفية</label><div class="scroll" id="pts"></div><label>الخط</label><div class="seg"><button class="oc on" id="f0" onclick="setF(0)">عصري</button><button class="oc" id="f1" onclick="setF(1)">كلاسيك</button><button class="oc" id="f2" onclick="setF(2)">خط يد</button></div><label>الحجم</label><div class="seg"><button class="oc on" id="s1" onclick="setSize(0)">بوست 4:5</button><button class="oc" id="s2" onclick="setSize(1)">ستوري 9:16</button></div></div>
+<label>أو ألوانك إنت</label><div class="row2" style="display:flex;gap:8px;align-items:center"><input type="color" id="c1" value="#7c3aed" style="width:60px;padding:2px"><input type="color" id="c2" value="#db2777" style="width:60px;padding:2px"><button class="oc" onclick="S.c1=S.c2='';draw()">إلغاء ألواني</button></div><label>الخلفية</label><div class="scroll" id="pts"></div><label>الخط</label><div class="seg"><button class="oc on" id="f0" onclick="setF(0)">عصري</button><button class="oc" id="f1" onclick="setF(1)">كلاسيك</button><button class="oc" id="f2" onclick="setF(2)">خط يد</button></div><label>الحجم</label><div class="seg"><button class="oc on" id="s1" onclick="setSize(0)">بوست 4:5</button><button class="oc" id="s2" onclick="setSize(1)">ستوري 9:16</button></div></div>
 <div class="card"><h2>٣) الكلام</h2>
 <label>من / صاحب الدعوة</label><input id="fr" placeholder="مثلاً: محمد وعائلته" maxlength="40">
 <label>إلى (اختياري)</label><input id="to" placeholder="مثلاً: العزيز أحمد" maxlength="40">
@@ -68,9 +68,14 @@ const OC=[
  {k:'bb',n:'👶 مولود جديد',t:'مولود جديد',m:'بقلوب مليانة فرحة نبشركم بقدوم مولودنا الجديد',e:['👶','🍼','🧸','⭐'],th:6},
  {k:'hj',n:'🕋 حج وعمرة',t:'حج مبرور',m:'حج مبرور وسعي مشكور وذنب مغفور',e:['🕋','🤲','🌙','✨'],th:7},
  {k:'nh',n:'🏡 بيت جديد',t:'مبروك البيت الجديد',m:'ندعوكم لزيارتنا في بيتنا الجديد',e:['🏡','🔑','🌿','✨'],th:3},
+ {k:'mo',n:'👩 عيد الأم',t:'عيد الأم',m:'كل سنة وإنتي أحلى أم في الدنيا',e:['🌷','💐','❤️','✨'],th:3},
+ {k:'ra',n:'🎊 رأس السنة',t:'سنة جديدة سعيدة',m:'كل سنة وإنتم طيبين، عام مليان خير وفرحة',e:['🎆','🥂','⭐','✨'],th:9},
+ {k:'bk',n:'🤝 شغل جديد',t:'مبروك الوظيفة الجديدة',m:'مبروك البداية الجديدة، ربنا يوفقك ويفتحها في وشك',e:['💼','🚀','⭐','✨'],th:1},
+ {k:'sf',n:'✈️ سلامتك / سفر',t:'رحلة سعيدة',m:'سفر سعيد وترجع بالسلامة',e:['✈️','🧳','🌍','✨'],th:6},
+ {k:'ge',n:'🤲 دعاء / عزاء',t:'إنا لله وإنا إليه راجعون',m:'عظم الله أجركم وأحسن عزاءكم',e:['🕊️','🤲','🌙','✨'],th:7},
  {k:'th',n:'💐 شكر',t:'شكراً من القلب',m:'شكراً على وقفتك معانا، ده كتير علينا',e:['💐','💛','✨','🤝'],th:5}];
 const TH=[['#0f172a','#7c5a1a','#fbbf24'],['#1e3a8a','#3b82f6','#fde68a'],['#db2777','#f59e0b','#fff'],['#be185d','#fda4af','#fff'],['#0f172a','#1e1b4b','#fcd34d'],['#065f46','#10b981','#fef3c7'],['#0ea5e9','#a5f3fc','#fff'],['#064e3b','#115e59','#fde68a'],['#7c3aed','#db2777','#fff'],['#111827','#374151','#f9fafb']];
-let S={o:0,t:null,sz:0,fr:'',to:'',msg:'',dt:'',pl:'',pt:0,ft:0,dd:''};let PH=null;
+let S={o:0,t:null,sz:0,fr:'',to:'',msg:'',dt:'',pl:'',pt:0,ft:0,dd:'',c1:'',c2:''};let PH=null;
 let view=false;
 function enc(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
 function dec(s){return JSON.parse(decodeURIComponent(escape(atob(s))))}
@@ -80,6 +85,7 @@ $('ths').innerHTML=TH.map((t,i)=>`<button class="th" style="background:linear-gr
 function pickO(i,keep){S.o=i;if(S.t===null||!keep)S.t=OC[i].th;if(!keep||!S.msg)S.msg=OC[i].m;$('msg').value=S.msg;draw()}
 const PN=['✨ نجوم','🕌 زخرفة','🌊 موجات','🎊 كونفتي','▭ سادة'];
 $('pts').innerHTML=PN.map((n,i)=>`<button class="oc" onclick="setPt(${i})">${n}</button>`).join('');
+['c1','c2'].forEach(k=>$(k).addEventListener('input',e=>{S[k]=e.target.value;if(!S.c1)S.c1=$('c1').value;if(!S.c2)S.c2=$('c2').value;draw()}));
 function setPt(i){S.pt=i;draw()}function setF(i){S.ft=i;draw()}
 $("phf").addEventListener("change",e=>{const f=e.target.files[0];if(!f){PH=null;draw();return}const im=new Image();im.onload=()=>{PH=im;draw()};im.src=URL.createObjectURL(f)});
 function dleft(){if(!S.dd)return null;const d=new Date(S.dd+'T00:00:00'),n=new Date();n.setHours(0,0,0,0);return Math.round((d-n)/864e5)}
@@ -90,8 +96,9 @@ function setSize(i){S.sz=i;draw()}
 function wrap(g,text,x,y,maxW,lh){const words=text.split(' ');let line='',yy=y;for(const w of words){const t=line?line+' '+w:w;if(g.measureText(t).width>maxW&&line){g.fillText(line,x,yy);line=w;yy+=lh}else line=t}g.fillText(line,x,yy);return yy+lh}
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
 function seeded(n){let s=n;return()=>(s=(s*16807)%2147483647)/2147483647}
+function lum(h){const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*((n>>8)&255)+.114*(n&255))/255}
 function draw(){
- const oc=OC[S.o],th=TH[S.t===null?oc.th:S.t],W=1080,H=S.sz?1920:1350,cv=$('cv');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+ const oc=OC[S.o],th0=TH[S.t===null?oc.th:S.t],th=S.c1?[S.c1,S.c2||S.c1,lum(S.c1)>.55?'#1f1b2e':'#fff']:th0,W=1080,H=S.sz?1920:1350,cv=$('cv');cv.width=W;cv.height=H;const g=cv.getContext('2d');
  let gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,th[0]);gr.addColorStop(1,th[1]);g.fillStyle=gr;g.fillRect(0,0,W,H);
  const FF=['sans-serif','Georgia,Times New Roman,serif','Segoe Script,Brush Script MT,cursive'][S.ft||0];
  const rnd=seeded(7+S.o*13);g.fillStyle=th[2];g.strokeStyle=th[2];const pt=S.pt||0;
