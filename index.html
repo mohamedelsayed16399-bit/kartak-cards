@@ -36,12 +36,12 @@ button.b.wa{background:#16a34a}button.b.g{background:#e7e3f7;color:var(--ink)}
 <div id="editor">
 <div class="card"><h2>١) المناسبة</h2><div class="scroll" id="ocs"></div></div>
 <div class="card"><h2>٢) الشكل</h2><div class="scroll" id="ths"></div>
-<label>الحجم</label><div class="seg"><button class="oc on" id="s1" onclick="setSize(0)">بوست 4:5</button><button class="oc" id="s2" onclick="setSize(1)">ستوري 9:16</button></div></div>
+<label>الخلفية</label><div class="scroll" id="pts"></div><label>الخط</label><div class="seg"><button class="oc on" id="f0" onclick="setF(0)">عصري</button><button class="oc" id="f1" onclick="setF(1)">كلاسيك</button><button class="oc" id="f2" onclick="setF(2)">خط يد</button></div><label>الحجم</label><div class="seg"><button class="oc on" id="s1" onclick="setSize(0)">بوست 4:5</button><button class="oc" id="s2" onclick="setSize(1)">ستوري 9:16</button></div></div>
 <div class="card"><h2>٣) الكلام</h2>
 <label>من / صاحب الدعوة</label><input id="fr" placeholder="مثلاً: محمد وعائلته" maxlength="40">
 <label>إلى (اختياري)</label><input id="to" placeholder="مثلاً: العزيز أحمد" maxlength="40">
-<label>رسالة</label><textarea id="msg" maxlength="160"></textarea>
-<div class="two"><div><label>التاريخ (اختياري)</label><input id="dt" placeholder="الجمعة ١٠ يناير"></div><div><label>المكان / الساعة</label><input id="pl" placeholder="قاعة النخيل، ٨ مساءً"></div></div>
+<label>صورة (اختياري، بتظهر في الصورة بس مش في اللينك)</label><input type="file" id="ph" accept="image/*"><label>رسالة</label><textarea id="msg" maxlength="160"></textarea>
+<div class="two"><div><label>التاريخ (اختياري)</label><input id="dd" type="date"></div><div><label>المكان / الساعة</label><input id="pl" placeholder="قاعة النخيل، ٨ مساءً"></div><div class="mut" style="margin-top:6px">لو حددت تاريخ، الكارت بيعرض "باقي كذا يوم".</div><input id="dt" type="hidden">
 </div></div>
 <div class="card" id="prev"><h2 id="ph">معاينة</h2><canvas id="cv"></canvas><div class="mut" style="margin-top:8px" id="hint">دوس "صورة" تنزلها أو تبعتها، أو "لينك" يفتح عند صاحبك الكارت نفسه.</div>
 <div id="vcta" style="display:none;text-align:center"><a class="view cta" style="display:inline-block;background:#7c3aed;color:#fff;border-radius:12px;padding:12px 22px;text-decoration:none;font-weight:700" href="./">اعمل كارتك إنت كمان 💌</a></div></div>
@@ -61,7 +61,7 @@ const OC=[
  {k:'nh',n:'🏡 بيت جديد',t:'مبروك البيت الجديد',m:'ندعوكم لزيارتنا في بيتنا الجديد',e:['🏡','🔑','🌿','✨'],th:3},
  {k:'th',n:'💐 شكر',t:'شكراً من القلب',m:'شكراً على وقفتك معانا، ده كتير علينا',e:['💐','💛','✨','🤝'],th:5}];
 const TH=[['#0f172a','#7c5a1a','#fbbf24'],['#1e3a8a','#3b82f6','#fde68a'],['#db2777','#f59e0b','#fff'],['#be185d','#fda4af','#fff'],['#0f172a','#1e1b4b','#fcd34d'],['#065f46','#10b981','#fef3c7'],['#0ea5e9','#a5f3fc','#fff'],['#064e3b','#115e59','#fde68a'],['#7c3aed','#db2777','#fff'],['#111827','#374151','#f9fafb']];
-let S={o:0,t:null,sz:0,fr:'',to:'',msg:'',dt:'',pl:''};
+let S={o:0,t:null,sz:0,fr:'',to:'',msg:'',dt:'',pl:'',pt:0,ft:0,dd:''};let PH=null;
 let view=false;
 function enc(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
 function dec(s){return JSON.parse(decodeURIComponent(escape(atob(s))))}
@@ -69,33 +69,47 @@ try{const h=location.hash.slice(1);if(h){S=Object.assign(S,dec(h));view=true}}ca
 $('ocs').innerHTML=OC.map((o,i)=>`<button class="oc" onclick="pickO(${i})">${o.n}</button>`).join('');
 $('ths').innerHTML=TH.map((t,i)=>`<button class="th" style="background:linear-gradient(135deg,${t[0]},${t[1]})" onclick="pickT(${i})"></button>`).join('');
 function pickO(i,keep){S.o=i;if(S.t===null||!keep)S.t=OC[i].th;if(!keep||!S.msg)S.msg=OC[i].m;$('msg').value=S.msg;draw()}
+const PN=['✨ نجوم','🕌 زخرفة','🌊 موجات','🎊 كونفتي','▭ سادة'];
+$('pts').innerHTML=PN.map((n,i)=>`<button class="oc" onclick="setPt(${i})">${n}</button>`).join('');
+function setPt(i){S.pt=i;draw()}function setF(i){S.ft=i;draw()}
+$('ph').addEventListener('change',e=>{const f=e.target.files[0];if(!f){PH=null;draw();return}const im=new Image();im.onload=()=>{PH=im;draw()};im.src=URL.createObjectURL(f)});
+function dleft(){if(!S.dd)return null;const d=new Date(S.dd+'T00:00:00'),n=new Date();n.setHours(0,0,0,0);return Math.round((d-n)/864e5)}
+function ardate(){if(!S.dd)return S.dt;try{return new Date(S.dd+'T00:00:00').toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}catch(e){return S.dd}}
 function pickT(i){S.t=i;draw()}
 function setSize(i){S.sz=i;draw()}
-['fr','to','msg','dt','pl'].forEach(k=>$(k).addEventListener('input',e=>{S[k]=e.target.value;draw()}));
+['fr','to','msg','dt','pl','dd'].forEach(k=>$(k).addEventListener('input',e=>{S[k]=e.target.value;draw()}));
 function wrap(g,text,x,y,maxW,lh){const words=text.split(' ');let line='',yy=y;for(const w of words){const t=line?line+' '+w:w;if(g.measureText(t).width>maxW&&line){g.fillText(line,x,yy);line=w;yy+=lh}else line=t}g.fillText(line,x,yy);return yy+lh}
 function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
 function seeded(n){let s=n;return()=>(s=(s*16807)%2147483647)/2147483647}
 function draw(){
  const oc=OC[S.o],th=TH[S.t===null?oc.th:S.t],W=1080,H=S.sz?1920:1350,cv=$('cv');cv.width=W;cv.height=H;const g=cv.getContext('2d');
  let gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,th[0]);gr.addColorStop(1,th[1]);g.fillStyle=gr;g.fillRect(0,0,W,H);
- // sparkles
- const rnd=seeded(7+S.o*13);for(let i=0;i<70;i++){g.globalAlpha=.1+rnd()*.35;g.fillStyle=th[2];g.beginPath();g.arc(rnd()*W,rnd()*H,2+rnd()*8,0,7);g.fill()}
- g.globalAlpha=.16;g.font='120px sans-serif';g.textAlign='center';for(let i=0;i<14;i++){g.fillText(oc.e[i%4],rnd()*W,rnd()*H)}g.globalAlpha=1;
+ const FF=['sans-serif','Georgia,Times New Roman,serif','Segoe Script,Brush Script MT,cursive'][S.ft||0];
+ const rnd=seeded(7+S.o*13);g.fillStyle=th[2];g.strokeStyle=th[2];const pt=S.pt||0;
+ if(pt===0){for(let i=0;i<70;i++){g.globalAlpha=.1+rnd()*.35;g.beginPath();g.arc(rnd()*W,rnd()*H,2+rnd()*8,0,7);g.fill()}
+  g.globalAlpha=.16;g.font='120px sans-serif';g.textAlign='center';for(let i=0;i<14;i++){g.fillText(oc.e[i%4],rnd()*W,rnd()*H)}}
+ else if(pt===1){g.globalAlpha=.13;g.lineWidth=3;for(let y=0;y<H+120;y+=120)for(let x=0;x<W+120;x+=120){g.save();g.translate(x,y);for(let r=0;r<2;r++){g.rotate(Math.PI/4);g.strokeRect(-42,-42,84,84)}g.restore()}}
+ else if(pt===2){g.globalAlpha=.14;g.lineWidth=5;for(let y=60;y<H;y+=70){g.beginPath();for(let x=0;x<=W;x+=20)g.lineTo(x,y+Math.sin(x/70+y/40)*22);g.stroke()}}
+ else if(pt===3){const cs=['#fbbf24','#f472b6','#60a5fa','#34d399','#fff'];for(let i=0;i<110;i++){g.globalAlpha=.6;g.fillStyle=cs[i%5];g.save();g.translate(rnd()*W,rnd()*H);g.rotate(rnd()*6);g.fillRect(-8,-4,16,8+rnd()*10);g.restore()}}
+ g.globalAlpha=1;
  // frame
  g.strokeStyle=th[2];g.lineWidth=6;rr(g,50,50,W-100,H-100,40);g.stroke();g.globalAlpha=.4;g.lineWidth=2;rr(g,70,70,W-140,H-140,30);g.stroke();g.globalAlpha=1;
  g.direction='rtl';g.textAlign='center';g.fillStyle=th[2];
- let y=S.sz?330:230;g.font='170px sans-serif';g.fillText(oc.e[0],W/2,y);y+=S.sz?130:110;
- g.font='bold 96px sans-serif';g.shadowColor='#0006';g.shadowBlur=14;g.fillText(oc.t,W/2,y+30);g.shadowBlur=0;y+=S.sz?150:120;
+ let y=S.sz?330:230;
+ if(PH){const R=S.sz?170:130;g.save();g.beginPath();g.arc(W/2,y-30,R,0,7);g.clip();const sc=Math.max(2*R/PH.width,2*R/PH.height);g.drawImage(PH,W/2-PH.width*sc/2,y-30-PH.height*sc/2,PH.width*sc,PH.height*sc);g.restore();g.strokeStyle=th[2];g.lineWidth=8;g.beginPath();g.arc(W/2,y-30,R,0,7);g.stroke();y+=R-60}
+ else{g.font='170px sans-serif';g.fillText(oc.e[0],W/2,y)}y+=S.sz?130:110;
+ g.font='bold 96px '+FF;g.shadowColor='#0006';g.shadowBlur=14;g.fillText(oc.t,W/2,y+30);g.shadowBlur=0;y+=S.sz?150:120;
  g.globalAlpha=.7;g.fillRect(W/2-120,y-40,240,5);g.globalAlpha=1;y+=40;
- if(S.to){g.font='bold 50px sans-serif';g.fillText(S.to,W/2,y+30);y+=95}
- g.font='46px sans-serif';y=wrap(g,S.msg||oc.m,W/2,y+30,W-260,76)+(S.sz?40:10);
- if(S.dt){g.font='bold 52px sans-serif';g.fillText('📅 '+S.dt,W/2,y+40);y+=85}
+ if(S.to){g.font='bold 50px '+FF;g.fillText(S.to,W/2,y+30);y+=95}
+ g.font='46px '+FF;y=wrap(g,S.msg||oc.m,W/2,y+30,W-260,76)+(S.sz?40:10);
+ const dtx=ardate();if(dtx){g.font='bold 52px '+FF;g.fillText('📅 '+dtx,W/2,y+40);y+=85}
+ const dl=dleft();if(dl!==null&&dl>=0){g.fillStyle='#ffffff26';rr(g,W/2-230,y+10,460,90,45);g.fill();g.fillStyle=th[2];g.font='bold 46px '+FF;g.fillText(dl===0?'⏰ النهارده!':dl===1?'⏰ بكرة!':'⏰ باقي '+dl.toLocaleString('ar-EG')+' يوم',W/2,y+72);y+=120}
  if(S.pl){g.font='bold 48px sans-serif';g.fillText('📍 '+S.pl,W/2,y+40);y+=85}
- if(S.fr){g.fillStyle='#ffffff22';rr(g,160,H-330,W-320,130,30);g.fill();g.fillStyle=th[2];g.font='bold 54px sans-serif';g.fillText(S.fr,W/2,H-245)}
+ if(S.fr){g.fillStyle='#ffffff22';rr(g,160,H-330,W-320,130,30);g.fill();g.fillStyle=th[2];g.font='bold 54px '+FF;g.fillText(S.fr,W/2,H-245)}
  g.globalAlpha=.7;g.font='28px sans-serif';g.fillText('اتعمل بـ كارتك 💌',W/2,H-110);g.globalAlpha=1;
  $('s1').classList.toggle('on',!S.sz);$('s2').classList.toggle('on',!!S.sz);
- document.querySelectorAll('.oc[onclick^=pickO]').forEach((b,i)=>b.classList.toggle('on',i===S.o));
- document.querySelectorAll('.th').forEach((b,i)=>b.classList.toggle('on',i===(S.t===null?oc.th:S.t)));
+ document.querySelectorAll('#ocs .oc').forEach((b,i)=>b.classList.toggle('on',i===S.o));
+ [0,1,2].forEach(i=>$('f'+i).classList.toggle('on',(S.ft||0)===i));document.querySelectorAll('#pts .oc').forEach((b,i)=>b.classList.toggle('on',i===(S.pt||0)));document.querySelectorAll('.th').forEach((b,i)=>b.classList.toggle('on',i===(S.t===null?oc.th:S.t)));
 }
 function link(){return location.origin+location.pathname+'#'+enc(S)}
 function shareLink(){const u=link();window.open('https://wa.me/?text='+encodeURIComponent((S.fr?S.fr+' بعتلك كارت 💌\n':'وصلك كارت 💌\n')+u),'_blank')}
@@ -106,6 +120,6 @@ if(view){$('editor').style.display='none';$('viewTop').style.display='block';$('
  document.querySelector('.bar button.wa').style.display='none';document.querySelector('.bar button').nextElementSibling&&0;
  document.querySelector('.bar').innerHTML='<button class="b" onclick="shareImg()">نزّل الكارت 🖼️</button>';
  document.title='💌 وصلك كارت'+(S.fr?' من '+S.fr:'')}
-else{$('fr').value=S.fr;$('to').value=S.to;$('dt').value=S.dt;$('pl').value=S.pl;pickO(S.o,!!S.msg)}
+else{$('fr').value=S.fr;$('to').value=S.to;$('dd').value=S.dd;$('pl').value=S.pl;pickO(S.o,!!S.msg)}
 draw();
 </script></body></html>
