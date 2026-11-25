@@ -40,8 +40,8 @@ button.b.wa{background:#16a34a}button.b.g{background:#e7e3f7;color:var(--ink)}
 <div class="card"><h2>٣) الكلام</h2>
 <label>من / صاحب الدعوة</label><input id="fr" placeholder="مثلاً: محمد وعائلته" maxlength="40">
 <label>إلى (اختياري)</label><input id="to" placeholder="مثلاً: العزيز أحمد" maxlength="40">
-<label>صورة (اختياري، بتظهر في الصورة بس مش في اللينك)</label><input type="file" id="ph" accept="image/*"><label>رسالة</label><textarea id="msg" maxlength="160"></textarea>
-<div class="two"><div><label>التاريخ (اختياري)</label><input id="dd" type="date"></div><div><label>المكان / الساعة</label><input id="pl" placeholder="قاعة النخيل، ٨ مساءً"></div><div class="mut" style="margin-top:6px">لو حددت تاريخ، الكارت بيعرض "باقي كذا يوم".</div><input id="dt" type="hidden">
+<label>صورة (اختياري، بتظهر في الصورة بس مش في اللينك)</label><input type="file" id="phf" accept="image/*"><label>رسالة</label><textarea id="msg" maxlength="160"></textarea>
+<div class="two"><div><label>التاريخ (اختياري)</label><input id="dd" type="date"></div><div><label>المكان / الساعة</label><input id="pl" placeholder="قاعة النخيل، ٨ مساءً"></div></div><div class="mut" style="margin-top:6px">لو حددت تاريخ، الكارت بيعرض "باقي كذا يوم".</div><input id="dt" type="hidden">
 </div></div>
 <div class="card" id="prev"><h2 id="ph">معاينة</h2><canvas id="cv"></canvas><div class="mut" style="margin-top:8px" id="hint">دوس "صورة" تنزلها أو تبعتها، أو "لينك" يفتح عند صاحبك الكارت نفسه.</div>
 <div id="vcta" style="display:none;text-align:center"><a class="view cta" style="display:inline-block;background:#7c3aed;color:#fff;border-radius:12px;padding:12px 22px;text-decoration:none;font-weight:700" href="./">اعمل كارتك إنت كمان 💌</a></div></div>
@@ -72,7 +72,7 @@ function pickO(i,keep){S.o=i;if(S.t===null||!keep)S.t=OC[i].th;if(!keep||!S.msg)
 const PN=['✨ نجوم','🕌 زخرفة','🌊 موجات','🎊 كونفتي','▭ سادة'];
 $('pts').innerHTML=PN.map((n,i)=>`<button class="oc" onclick="setPt(${i})">${n}</button>`).join('');
 function setPt(i){S.pt=i;draw()}function setF(i){S.ft=i;draw()}
-$('ph').addEventListener('change',e=>{const f=e.target.files[0];if(!f){PH=null;draw();return}const im=new Image();im.onload=()=>{PH=im;draw()};im.src=URL.createObjectURL(f)});
+$("phf").addEventListener("change",e=>{const f=e.target.files[0];if(!f){PH=null;draw();return}const im=new Image();im.onload=()=>{PH=im;draw()};im.src=URL.createObjectURL(f)});
 function dleft(){if(!S.dd)return null;const d=new Date(S.dd+'T00:00:00'),n=new Date();n.setHours(0,0,0,0);return Math.round((d-n)/864e5)}
 function ardate(){if(!S.dd)return S.dt;try{return new Date(S.dd+'T00:00:00').toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}catch(e){return S.dd}}
 function pickT(i){S.t=i;draw()}
