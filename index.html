@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>كارتك - اعمل كارت دعوة أو تهنئة في ٣٠ ثانية</title>
+<meta name="description" content="اعمل كارت دعوة أو تهنئة شيك: عيد ميلاد، فرح، خطوبة، نجاح، رمضان، مولود. اختار الشكل، اكتب اسمك، وابعته صورة أو لينك على واتساب.">
+<meta property="og:title" content="كارتك - كروت دعوة وتهنئة في ٣٠ ثانية"><meta property="og:description" content="اختار المناسبة والشكل واكتب اسمك وابعتها واتساب."><meta property="og:type" content="website">
+<meta name="theme-color" content="#7c3aed">
+<style>
+:root{--pri:#7c3aed;--ink:#1f1b2e;--mut:#6b6880;--bg:#f6f3ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,"Segoe UI",Tahoma,Arial,sans-serif;padding-bottom:84px}
+header{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;text-align:center;padding:18px 12px 22px}
+header h1{margin:0;font-size:28px}header p{margin:4px 0 0;font-size:14px;opacity:.92}
+main{max-width:560px;margin:0 auto;padding:0 12px}
+.card{background:#fff;border-radius:16px;padding:14px;margin:12px 0;box-shadow:0 2px 10px #0001}
+h2{margin:0 0 10px;font-size:16px}
+.scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.oc,.th{flex:0 0 auto;border:2px solid transparent;background:#f1eefc;border-radius:12px;padding:8px 12px;font:inherit;color:var(--ink);cursor:pointer;white-space:nowrap}
+.oc.on{border-color:var(--pri);background:#ede9fe;font-weight:700}
+.th{width:54px;height:54px;padding:0;border-radius:14px}.th.on{border-color:var(--ink);transform:scale(1.08)}
+label{display:block;font-size:13px;color:var(--mut);margin:10px 0 4px}
+input,textarea,select{width:100%;font:inherit;padding:10px;border:1.5px solid #e2ddf3;border-radius:10px;background:#fff;color:var(--ink)}
+textarea{min-height:70px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#cv{width:100%;border-radius:14px;box-shadow:0 6px 24px #0003;display:block;background:#ddd}
+.bar{position:fixed;bottom:0;inset-inline:0;background:#fff;border-top:1px solid #e2ddf3;padding:10px;display:flex;gap:8px;justify-content:center;z-index:5}
+button.b{flex:1;max-width:190px;border:0;border-radius:10px;padding:12px;font:inherit;font-weight:700;color:#fff;background:var(--pri);cursor:pointer}
+button.b.wa{background:#16a34a}button.b.g{background:#e7e3f7;color:var(--ink)}
+.view{text-align:center;padding:14px}.view .cta{margin:16px auto 0;display:inline-block;background:var(--pri);color:#fff;border-radius:12px;padding:12px 22px;text-decoration:none;font-weight:700}
+.mut{color:var(--mut);font-size:13px}
+.seg{display:flex;gap:8px}.seg button{flex:1}
+</style></head><body>
+<header><h1>💌 كارتك</h1><p>كارت دعوة أو تهنئة شيك في ٣٠ ثانية</p></header>
+<main>
+<div id="viewTop" class="card view" style="display:none"><div style="font-size:15px">💌 وصلك كارت!</div></div>
+<div id="editor">
+<div class="card"><h2>١) المناسبة</h2><div class="scroll" id="ocs"></div></div>
+<div class="card"><h2>٢) الشكل</h2><div class="scroll" id="ths"></div>
+<label>الحجم</label><div class="seg"><button class="oc on" id="s1" onclick="setSize(0)">بوست 4:5</button><button class="oc" id="s2" onclick="setSize(1)">ستوري 9:16</button></div></div>
+<div class="card"><h2>٣) الكلام</h2>
+<label>من / صاحب الدعوة</label><input id="fr" placeholder="مثلاً: محمد وعائلته" maxlength="40">
+<label>إلى (اختياري)</label><input id="to" placeholder="مثلاً: العزيز أحمد" maxlength="40">
+<label>رسالة</label><textarea id="msg" maxlength="160"></textarea>
+<div class="two"><div><label>التاريخ (اختياري)</label><input id="dt" placeholder="الجمعة ١٠ يناير"></div><div><label>المكان / الساعة</label><input id="pl" placeholder="قاعة النخيل، ٨ مساءً"></div></div>
+</div></div>
+<div class="card" id="prev"><h2 id="ph">معاينة</h2><canvas id="cv"></canvas><div class="mut" style="margin-top:8px" id="hint">دوس "صورة" تنزلها أو تبعتها، أو "لينك" يفتح عند صاحبك الكارت نفسه.</div>
+<div id="vcta" style="display:none;text-align:center"><a class="view cta" style="display:inline-block;background:#7c3aed;color:#fff;border-radius:12px;padding:12px 22px;text-decoration:none;font-weight:700" href="./">اعمل كارتك إنت كمان 💌</a></div></div>
+</main>
+<div class="bar" id="bar"><button class="b wa" onclick="shareLink()">لينك واتساب 💬</button><button class="b" onclick="shareImg()">صورة 🖼️</button></div>
+<script>
+const $=id=>document.getElementById(id);
+const OC=[
+ {k:'bd',n:'🎂 عيد ميلاد',t:'دعوة عيد ميلاد',m:'يسعدنا حضورك ومشاركتنا الفرحة',e:['🎂','🎈','🎉','✨'],th:2},
+ {k:'wd',n:'💍 فرح',t:'دعوة زفاف',m:'يتشرف أهل العروسين بدعوتكم لحضور حفل الزفاف',e:['💍','🌹','✨','🕊️'],th:0},
+ {k:'en',n:'💞 خطوبة',t:'دعوة خطوبة',m:'بكل الحب ندعوكم لمشاركتنا فرحة الخطوبة',e:['💞','🌸','✨','💍'],th:3},
+ {k:'gr',n:'🎓 تخرج / نجاح',t:'مبروك النجاح',m:'ألف مبروك، تعبك وجهدك أثمر وإحنا فخورين بيك',e:['🎓','🏆','⭐','✨'],th:1},
+ {k:'rm',n:'🌙 رمضان كريم',t:'رمضان كريم',m:'كل عام وأنتم بخير، تقبل الله منا ومنكم صالح الأعمال',e:['🌙','⭐','🕌','✨'],th:4},
+ {k:'ed',n:'🕌 عيد',t:'عيد مبارك',m:'عيدكم مبارك وكل سنة وإنتم طيبين',e:['🎉','🌙','🍬','✨'],th:5},
+ {k:'bb',n:'👶 مولود جديد',t:'مولود جديد',m:'بقلوب مليانة فرحة نبشركم بقدوم مولودنا الجديد',e:['👶','🍼','🧸','⭐'],th:6},
+ {k:'hj',n:'🕋 حج وعمرة',t:'حج مبرور',m:'حج مبرور وسعي مشكور وذنب مغفور',e:['🕋','🤲','🌙','✨'],th:7},
+ {k:'nh',n:'🏡 بيت جديد',t:'مبروك البيت الجديد',m:'ندعوكم لزيارتنا في بيتنا الجديد',e:['🏡','🔑','🌿','✨'],th:3},
+ {k:'th',n:'💐 شكر',t:'شكراً من القلب',m:'شكراً على وقفتك معانا، ده كتير علينا',e:['💐','💛','✨','🤝'],th:5}];
+const TH=[['#0f172a','#7c5a1a','#fbbf24'],['#1e3a8a','#3b82f6','#fde68a'],['#db2777','#f59e0b','#fff'],['#be185d','#fda4af','#fff'],['#0f172a','#1e1b4b','#fcd34d'],['#065f46','#10b981','#fef3c7'],['#0ea5e9','#a5f3fc','#fff'],['#064e3b','#115e59','#fde68a'],['#7c3aed','#db2777','#fff'],['#111827','#374151','#f9fafb']];
+let S={o:0,t:null,sz:0,fr:'',to:'',msg:'',dt:'',pl:''};
+let view=false;
+function enc(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
+function dec(s){return JSON.parse(decodeURIComponent(escape(atob(s))))}
+try{const h=location.hash.slice(1);if(h){S=Object.assign(S,dec(h));view=true}}catch(e){}
+$('ocs').innerHTML=OC.map((o,i)=>`<button class="oc" onclick="pickO(${i})">${o.n}</button>`).join('');
+$('ths').innerHTML=TH.map((t,i)=>`<button class="th" style="background:linear-gradient(135deg,${t[0]},${t[1]})" onclick="pickT(${i})"></button>`).join('');
+function pickO(i,keep){S.o=i;if(S.t===null||!keep)S.t=OC[i].th;if(!keep||!S.msg)S.msg=OC[i].m;$('msg').value=S.msg;draw()}
+function pickT(i){S.t=i;draw()}
+function setSize(i){S.sz=i;draw()}
+['fr','to','msg','dt','pl'].forEach(k=>$(k).addEventListener('input',e=>{S[k]=e.target.value;draw()}));
+function wrap(g,text,x,y,maxW,lh){const words=text.split(' ');let line='',yy=y;for(const w of words){const t=line?line+' '+w:w;if(g.measureText(t).width>maxW&&line){g.fillText(line,x,yy);line=w;yy+=lh}else line=t}g.fillText(line,x,yy);return yy+lh}
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function seeded(n){let s=n;return()=>(s=(s*16807)%2147483647)/2147483647}
+function draw(){
+ const oc=OC[S.o],th=TH[S.t===null?oc.th:S.t],W=1080,H=S.sz?1920:1350,cv=$('cv');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+ let gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,th[0]);gr.addColorStop(1,th[1]);g.fillStyle=gr;g.fillRect(0,0,W,H);
+ // sparkles
+ const rnd=seeded(7+S.o*13);for(let i=0;i<70;i++){g.globalAlpha=.1+rnd()*.35;g.fillStyle=th[2];g.beginPath();g.arc(rnd()*W,rnd()*H,2+rnd()*8,0,7);g.fill()}
+ g.globalAlpha=.16;g.font='120px sans-serif';g.textAlign='center';for(let i=0;i<14;i++){g.fillText(oc.e[i%4],rnd()*W,rnd()*H)}g.globalAlpha=1;
+ // frame
+ g.strokeStyle=th[2];g.lineWidth=6;rr(g,50,50,W-100,H-100,40);g.stroke();g.globalAlpha=.4;g.lineWidth=2;rr(g,70,70,W-140,H-140,30);g.stroke();g.globalAlpha=1;
+ g.direction='rtl';g.textAlign='center';g.fillStyle=th[2];
+ let y=S.sz?330:230;g.font='170px sans-serif';g.fillText(oc.e[0],W/2,y);y+=S.sz?130:110;
+ g.font='bold 96px sans-serif';g.shadowColor='#0006';g.shadowBlur=14;g.fillText(oc.t,W/2,y+30);g.shadowBlur=0;y+=S.sz?150:120;
+ g.globalAlpha=.7;g.fillRect(W/2-120,y-40,240,5);g.globalAlpha=1;y+=40;
+ if(S.to){g.font='bold 50px sans-serif';g.fillText(S.to,W/2,y+30);y+=95}
+ g.font='46px sans-serif';y=wrap(g,S.msg||oc.m,W/2,y+30,W-260,76)+(S.sz?40:10);
+ if(S.dt){g.font='bold 52px sans-serif';g.fillText('📅 '+S.dt,W/2,y+40);y+=85}
+ if(S.pl){g.font='bold 48px sans-serif';g.fillText('📍 '+S.pl,W/2,y+40);y+=85}
+ if(S.fr){g.fillStyle='#ffffff22';rr(g,160,H-330,W-320,130,30);g.fill();g.fillStyle=th[2];g.font='bold 54px sans-serif';g.fillText(S.fr,W/2,H-245)}
+ g.globalAlpha=.7;g.font='28px sans-serif';g.fillText('اتعمل بـ كارتك 💌',W/2,H-110);g.globalAlpha=1;
+ $('s1').classList.toggle('on',!S.sz);$('s2').classList.toggle('on',!!S.sz);
+ document.querySelectorAll('.oc[onclick^=pickO]').forEach((b,i)=>b.classList.toggle('on',i===S.o));
+ document.querySelectorAll('.th').forEach((b,i)=>b.classList.toggle('on',i===(S.t===null?oc.th:S.t)));
+}
+function link(){return location.origin+location.pathname+'#'+enc(S)}
+function shareLink(){const u=link();window.open('https://wa.me/?text='+encodeURIComponent((S.fr?S.fr+' بعتلك كارت 💌\n':'وصلك كارت 💌\n')+u),'_blank')}
+function shareImg(){$('cv').toBlob(async b=>{const f=new File([b],'kartak.png',{type:'image/png'});
+ if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:'اتعمل بـ كارتك: '+location.origin+location.pathname});return}catch(e){}}
+ const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='kartak.png';a.click()})}
+if(view){$('editor').style.display='none';$('viewTop').style.display='block';$('ph').style.display='none';$('hint').style.display='none';$('vcta').style.display='block';
+ document.querySelector('.bar button.wa').style.display='none';document.querySelector('.bar button').nextElementSibling&&0;
+ document.querySelector('.bar').innerHTML='<button class="b" onclick="shareImg()">نزّل الكارت 🖼️</button>';
+ document.title='💌 وصلك كارت'+(S.fr?' من '+S.fr:'')}
+else{$('fr').value=S.fr;$('to').value=S.to;$('dt').value=S.dt;$('pl').value=S.pl;pickO(S.o,!!S.msg)}
+draw();
+</script></body></html>
