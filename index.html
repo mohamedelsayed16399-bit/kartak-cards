@@ -44,7 +44,7 @@ button.b.wa{background:#16a34a}button.b.g{background:#e7e3f7;color:var(--ink)}
 <div id="editor">
 <div class="card"><h2>١) المناسبة</h2><div class="scroll" id="ocs"></div></div>
 <div class="card"><h2>٢) الشكل</h2><div class="scroll" id="ths"></div>
-<label>أو ألوانك إنت</label><div class="row2" style="display:flex;gap:8px;align-items:center"><input type="color" id="c1" value="#7c3aed" style="width:60px;padding:2px"><input type="color" id="c2" value="#db2777" style="width:60px;padding:2px"><button class="oc" onclick="S.c1=S.c2='';draw()">إلغاء ألواني</button></div><label>الخلفية</label><div class="scroll" id="pts"></div><label>الخط</label><div class="seg"><button class="oc on" id="f0" onclick="setF(0)">عصري</button><button class="oc" id="f1" onclick="setF(1)">كلاسيك</button><button class="oc" id="f2" onclick="setF(2)">خط يد</button></div><label>الحجم</label><div class="seg"><button class="oc on" id="s1" onclick="setSize(0)">بوست 4:5</button><button class="oc" id="s2" onclick="setSize(1)">ستوري 9:16</button></div></div>
+<label>أو ألوانك إنت</label><div class="row2" style="display:flex;gap:8px;align-items:center"><input type="color" id="c1" value="#7c3aed" style="width:60px;padding:2px"><input type="color" id="c2" value="#db2777" style="width:60px;padding:2px"><button class="oc" onclick="S.c1=S.c2='';draw()">إلغاء ألواني</button></div><label>الخلفية</label><div class="scroll" id="pts"></div><label>الخط</label><div class="seg"><button class="oc on" id="f0" onclick="setF(0)">عصري</button><button class="oc" id="f1" onclick="setF(1)">كلاسيك</button><button class="oc" id="f2" onclick="setF(2)">خط يد</button></div><label>الحجم</label><div class="seg"><button class="oc on" id="s1" onclick="setSize(0)">بوست 4:5</button><button class="oc" id="s3" onclick="setSize(2)">مربع 1:1</button><button class="oc" id="s2" onclick="setSize(1)">ستوري 9:16</button></div></div>
 <div class="card"><h2>٣) الكلام</h2>
 <label>من / صاحب الدعوة</label><input id="fr" placeholder="مثلاً: محمد وعائلته" maxlength="40">
 <label>إلى (اختياري)</label><input id="to" placeholder="مثلاً: العزيز أحمد" maxlength="40">
@@ -55,7 +55,7 @@ button.b.wa{background:#16a34a}button.b.g{background:#e7e3f7;color:var(--ink)}
 </div><div class="card" id="prev"><h2 id="ph">معاينة</h2><canvas id="cv"></canvas><div class="mut" style="margin-top:8px" id="hint">دوس "صورة" تنزلها أو تبعتها، أو "لينك" يفتح عند صاحبك الكارت نفسه.</div>
 <div id="vcta" style="display:none;text-align:center"><a class="view cta" style="display:inline-block;background:#7c3aed;color:#fff;border-radius:12px;padding:12px 22px;text-decoration:none;font-weight:700" href="./">اعمل كارتك إنت كمان 💌</a></div></div>
 </main>
-<div class="bar" id="bar"><button class="b wa" onclick="shareLink()">لينك واتساب 💬</button><button class="b" onclick="shareImg()">صورة 🖼️</button></div>
+<div class="bar" id="bar"><button class="b wa" onclick="shareLink()">لينك واتساب 💬</button><button class="b g" onclick="copyLink()">نسخ اللينك 🔗</button><button class="b" onclick="shareImg()">صورة 🖼️</button></div>
 <script>
 const $=id=>document.getElementById(id);
 const OC=[
@@ -98,7 +98,7 @@ function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);
 function seeded(n){let s=n;return()=>(s=(s*16807)%2147483647)/2147483647}
 function lum(h){const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*((n>>8)&255)+.114*(n&255))/255}
 function draw(){
- const oc=OC[S.o],th0=TH[S.t===null?oc.th:S.t],th=S.c1?[S.c1,S.c2||S.c1,lum(S.c1)>.55?'#1f1b2e':'#fff']:th0,W=1080,H=S.sz?1920:1350,cv=$('cv');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+ const oc=OC[S.o],th0=TH[S.t===null?oc.th:S.t],th=S.c1?[S.c1,S.c2||S.c1,lum(S.c1)>.55?'#1f1b2e':'#fff']:th0,W=S.sz===2?1350:1080,H=S.sz===1?1920:1350,cv=$('cv');cv.width=W;cv.height=H;const g=cv.getContext('2d');
  let gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,th[0]);gr.addColorStop(1,th[1]);g.fillStyle=gr;g.fillRect(0,0,W,H);
  const FF=['sans-serif','Georgia,Times New Roman,serif','Segoe Script,Brush Script MT,cursive'][S.ft||0];
  const rnd=seeded(7+S.o*13);g.fillStyle=th[2];g.strokeStyle=th[2];const pt=S.pt||0;
@@ -111,24 +111,25 @@ function draw(){
  // frame
  g.strokeStyle=th[2];g.lineWidth=6;rr(g,50,50,W-100,H-100,40);g.stroke();g.globalAlpha=.4;g.lineWidth=2;rr(g,70,70,W-140,H-140,30);g.stroke();g.globalAlpha=1;
  g.direction='rtl';g.textAlign='center';g.fillStyle=th[2];
- let y=S.sz?330:230;
- if(PH){const R=S.sz?170:130;g.save();g.beginPath();g.arc(W/2,y-30,R,0,7);g.clip();const sc=Math.max(2*R/PH.width,2*R/PH.height);g.drawImage(PH,W/2-PH.width*sc/2,y-30-PH.height*sc/2,PH.width*sc,PH.height*sc);g.restore();g.strokeStyle=th[2];g.lineWidth=8;g.beginPath();g.arc(W/2,y-30,R,0,7);g.stroke();y+=R-60}
- else{g.font='170px sans-serif';g.fillText(oc.e[0],W/2,y)}y+=S.sz?130:110;
- g.font='bold 96px '+FF;g.shadowColor='#0006';g.shadowBlur=14;g.fillText(oc.t,W/2,y+30);g.shadowBlur=0;y+=S.sz?150:120;
+ let y=S.sz===1?330:230;
+ if(PH){const R=S.sz===1?170:130;g.save();g.beginPath();g.arc(W/2,y-30,R,0,7);g.clip();const sc=Math.max(2*R/PH.width,2*R/PH.height);g.drawImage(PH,W/2-PH.width*sc/2,y-30-PH.height*sc/2,PH.width*sc,PH.height*sc);g.restore();g.strokeStyle=th[2];g.lineWidth=8;g.beginPath();g.arc(W/2,y-30,R,0,7);g.stroke();y+=R-60}
+ else{g.font='170px sans-serif';g.fillText(oc.e[0],W/2,y)}y+=S.sz===1?130:110;
+ g.font='bold 96px '+FF;g.shadowColor='#0006';g.shadowBlur=14;g.fillText(oc.t,W/2,y+30);g.shadowBlur=0;y+=S.sz===1?150:120;
  g.globalAlpha=.7;g.fillRect(W/2-120,y-40,240,5);g.globalAlpha=1;y+=40;
  if(S.to){g.font='bold 50px '+FF;g.fillText(S.to,W/2,y+30);y+=95}
- g.font='46px '+FF;y=wrap(g,S.msg||oc.m,W/2,y+30,W-260,76)+(S.sz?40:10);
+ g.font='46px '+FF;y=wrap(g,S.msg||oc.m,W/2,y+30,W-260,76)+(S.sz===1?40:10);
  const dtx=ardate();if(dtx){g.font='bold 52px '+FF;g.fillText('📅 '+dtx,W/2,y+40);y+=85}
  const dl=dleft();if(dl!==null&&dl>=0){g.fillStyle='#ffffff26';rr(g,W/2-230,y+10,460,90,45);g.fill();g.fillStyle=th[2];g.font='bold 46px '+FF;g.fillText(dl===0?'⏰ النهارده!':dl===1?'⏰ بكرة!':'⏰ باقي '+dl.toLocaleString('ar-EG')+' يوم',W/2,y+72);y+=120}
  if(S.pl){g.font='bold 48px sans-serif';g.fillText('📍 '+S.pl,W/2,y+40);y+=85}
  if(S.fr){g.fillStyle='#ffffff22';rr(g,160,H-330,W-320,130,30);g.fill();g.fillStyle=th[2];g.font='bold 54px '+FF;g.fillText(S.fr,W/2,H-245)}
  g.globalAlpha=.7;g.font='28px sans-serif';g.fillText('اتعمل بـ كارتك 💌',W/2,H-110);g.globalAlpha=1;
- $('s1').classList.toggle('on',!S.sz);$('s2').classList.toggle('on',!!S.sz);
+ $('s1').classList.toggle('on',!S.sz);$('s2').classList.toggle('on',S.sz===1);$('s3').classList.toggle('on',S.sz===2);
  document.querySelectorAll('#ocs .oc').forEach((b,i)=>b.classList.toggle('on',i===S.o));
  [0,1,2].forEach(i=>$('f'+i).classList.toggle('on',(S.ft||0)===i));document.querySelectorAll('#pts .oc').forEach((b,i)=>b.classList.toggle('on',i===(S.pt||0)));document.querySelectorAll('.th').forEach((b,i)=>b.classList.toggle('on',i===(S.t===null?oc.th:S.t)));
 }
 function link(){return location.origin+location.pathname+'#'+enc(S)}
 function shareLink(){const u=link();window.open('https://wa.me/?text='+encodeURIComponent((S.fr?S.fr+' بعتلك كارت 💌\n':'وصلك كارت 💌\n')+u),'_blank')}
+async function copyLink(){const u=link();try{await navigator.clipboard.writeText(u);alert('اتنسخ اللينك ✅')}catch(e){prompt('انسخ اللينك:',u)}}
 function shareImg(){$('cv').toBlob(async b=>{const f=new File([b],'kartak.png',{type:'image/png'});
  if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:'اتعمل بـ كارتك: '+location.origin+location.pathname});return}catch(e){}}
  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='kartak.png';a.click()})}
