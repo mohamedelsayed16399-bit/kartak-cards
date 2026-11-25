@@ -29,6 +29,14 @@ button.b.wa{background:#16a34a}button.b.g{background:#e7e3f7;color:var(--ink)}
 .view{text-align:center;padding:14px}.view .cta{margin:16px auto 0;display:inline-block;background:var(--pri);color:#fff;border-radius:12px;padding:12px 22px;text-decoration:none;font-weight:700}
 .mut{color:var(--mut);font-size:13px}
 .seg{display:flex;gap:8px}.seg button{flex:1}
+#env{position:fixed;inset:0;z-index:20;background:linear-gradient(135deg,#7c3aed,#db2777);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;cursor:pointer;transition:opacity .7s,transform .7s}
+#env.open{opacity:0;transform:scale(1.4);pointer-events:none}
+.envl{width:230px;height:160px;background:#fff;border-radius:12px;position:relative;box-shadow:0 10px 40px #0005;overflow:hidden;animation:fl 2s ease-in-out infinite}
+.envl:before{content:"";position:absolute;inset:0;background:linear-gradient(160deg,#ede9fe 50%,transparent 50%),linear-gradient(200deg,#ddd6fe 50%,transparent 50%)}
+.envl i{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-style:normal;font-size:44px}
+@keyframes fl{50%{transform:translateY(-10px)}}
+.gb{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #e2ddf3}
+.gb button{background:#16a34a;color:#fff;border:0;border-radius:8px;padding:8px 12px;font:inherit;cursor:pointer}
 </style></head><body>
 <header><h1>💌 كارتك</h1><p>كارت دعوة أو تهنئة شيك في ٣٠ ثانية</p></header>
 <main>
@@ -43,7 +51,8 @@ button.b.wa{background:#16a34a}button.b.g{background:#e7e3f7;color:var(--ink)}
 <label>صورة (اختياري، بتظهر في الصورة بس مش في اللينك)</label><input type="file" id="phf" accept="image/*"><label>رسالة</label><textarea id="msg" maxlength="160"></textarea>
 <div class="two"><div><label>التاريخ (اختياري)</label><input id="dd" type="date"></div><div><label>المكان / الساعة</label><input id="pl" placeholder="قاعة النخيل، ٨ مساءً"></div></div><div class="mut" style="margin-top:6px">لو حددت تاريخ، الكارت بيعرض "باقي كذا يوم".</div><input id="dt" type="hidden">
 </div></div>
-<div class="card" id="prev"><h2 id="ph">معاينة</h2><canvas id="cv"></canvas><div class="mut" style="margin-top:8px" id="hint">دوس "صورة" تنزلها أو تبعتها، أو "لينك" يفتح عند صاحبك الكارت نفسه.</div>
+<div class="card"><h2>٤) دعوة جماعية (اختياري)</h2><div class="mut">اكتب أسماء المدعوين، كل اسم في سطر، وهيطلعلك لينك واتساب باسم كل واحد.</div><textarea id="gs" placeholder="أحمد&#10;سارة&#10;أبو علي" style="margin-top:8px"></textarea><div id="gl"></div></div>
+</div><div class="card" id="prev"><h2 id="ph">معاينة</h2><canvas id="cv"></canvas><div class="mut" style="margin-top:8px" id="hint">دوس "صورة" تنزلها أو تبعتها، أو "لينك" يفتح عند صاحبك الكارت نفسه.</div>
 <div id="vcta" style="display:none;text-align:center"><a class="view cta" style="display:inline-block;background:#7c3aed;color:#fff;border-radius:12px;padding:12px 22px;text-decoration:none;font-weight:700" href="./">اعمل كارتك إنت كمان 💌</a></div></div>
 </main>
 <div class="bar" id="bar"><button class="b wa" onclick="shareLink()">لينك واتساب 💬</button><button class="b" onclick="shareImg()">صورة 🖼️</button></div>
@@ -121,5 +130,11 @@ if(view){$('editor').style.display='none';$('viewTop').style.display='block';$('
  document.querySelector('.bar').innerHTML='<button class="b" onclick="shareImg()">نزّل الكارت 🖼️</button>';
  document.title='💌 وصلك كارت'+(S.fr?' من '+S.fr:'')}
 else{$('fr').value=S.fr;$('to').value=S.to;$('dd').value=S.dd;$('pl').value=S.pl;pickO(S.o,!!S.msg)}
+function guests(){return $('gs').value.split('\n').map(x=>x.trim()).filter(Boolean).slice(0,60)}
+function renderG(){const g=guests();$('gl').innerHTML=g.map((n,i)=>`<div class="gb"><span>${esc(n)}</span><button onclick="sendG(${i})">واتساب 💬</button></div>`).join('')}
+function esc(x){return String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function sendG(i){const n=guests()[i],o=Object.assign({},S,{to:n}),u=location.origin+location.pathname+'#'+enc(o);window.open('https://wa.me/?text='+encodeURIComponent('يا '+n+'، '+(S.fr?S.fr+' بعتلك كارت 💌':'وصلك كارت 💌')+'\n'+u),'_blank')}
+$('gs').addEventListener('input',renderG);
+if(view){document.querySelectorAll('main > .card').forEach(c=>{if(c.id!=='prev'&&c.id!=='viewTop')c.style.display='none'});const e=document.createElement('div');e.id='env';e.innerHTML='<div class="envl"><i>💌</i></div><div style="margin-top:24px;font-size:20px;font-weight:700">'+(S.to?'يا '+esc(S.to)+'، ':'')+(S.fr?'كارت من '+esc(S.fr):'وصلك كارت')+'</div><div style="margin-top:8px;opacity:.85">دوس عشان تفتحه</div>';e.onclick=()=>{e.classList.add('open');setTimeout(()=>e.remove(),800)};document.body.appendChild(e)}
 draw();
 </script></body></html>
