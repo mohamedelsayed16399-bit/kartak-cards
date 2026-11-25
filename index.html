@@ -48,7 +48,7 @@ button.b.wa{background:#16a34a}button.b.g{background:#e7e3f7;color:var(--ink)}
 <div class="card"><h2>٣) الكلام</h2>
 <label>من / صاحب الدعوة</label><input id="fr" placeholder="مثلاً: محمد وعائلته" maxlength="40">
 <label>إلى (اختياري)</label><input id="to" placeholder="مثلاً: العزيز أحمد" maxlength="40">
-<label>صورة (اختياري، بتظهر في الصورة بس مش في اللينك)</label><input type="file" id="phf" accept="image/*"><label>رسالة</label><textarea id="msg" maxlength="160"></textarea>
+<label>صورة (اختياري، بتظهر في الصورة بس مش في اللينك)</label><input type="file" id="phf" accept="image/*"><label>رسالة <button class="oc" style="padding:3px 10px;font-size:12px" onclick="altMsg()">رسالة تانية 🔄</button></label><textarea id="msg" maxlength="160"></textarea>
 <div class="two"><div><label>التاريخ (اختياري)</label><input id="dd" type="date"></div><div><label>المكان / الساعة</label><input id="pl" placeholder="قاعة النخيل، ٨ مساءً"></div></div><div class="mut" style="margin-top:6px">لو حددت تاريخ، الكارت بيعرض "باقي كذا يوم".</div><input id="dt" type="hidden">
 </div></div>
 <div class="card"><h2>٤) دعوة جماعية (اختياري)</h2><div class="mut">اكتب أسماء المدعوين، كل اسم في سطر، وهيطلعلك لينك واتساب باسم كل واحد.</div><textarea id="gs" placeholder="أحمد&#10;سارة&#10;أبو علي" style="margin-top:8px"></textarea><div id="gl"></div></div>
@@ -86,6 +86,17 @@ function pickO(i,keep){S.o=i;if(S.t===null||!keep)S.t=OC[i].th;if(!keep||!S.msg)
 const PN=['✨ نجوم','🕌 زخرفة','🌊 موجات','🎊 كونفتي','▭ سادة'];
 $('pts').innerHTML=PN.map((n,i)=>`<button class="oc" onclick="setPt(${i})">${n}</button>`).join('');
 ['c1','c2'].forEach(k=>$(k).addEventListener('input',e=>{S[k]=e.target.value;if(!S.c1)S.c1=$('c1').value;if(!S.c2)S.c2=$('c2').value;draw()}));
+const ALT={bd:['كل سنة وإنت طيب، ربنا يخليك لينا ويجعل سنتك كلها فرحة','عيد ميلاد سعيد! ننتظرك علشان نطفي الشمع سوا','يوم واحد في السنة، فخلينا نخليه يوم مش بينسي'],
+wd:['بكل الحب والسرور ندعوكم لمشاركتنا أجمل أيام حياتنا','فرحتنا مش هتكمل غير بوجودكم معانا','ندعوكم لحضور حفل زفاف نجلنا، وحضوركم شرف لنا'],
+en:['فرحتنا مش هتكمل غير بوجودكم معانا في خطوبتنا','ندعوكم لمشاركتنا لحظة العمر في حفل الخطوبة'],
+gr:['مبروك التخرج، النهارده بداية الحلم الحقيقي','تعب السنين اتحول لفرحة، ألف مبروك','فخورين بيك ومبسوطين بنجاحك، مبروك'],
+rm:['رمضان كريم، اللهم بلغنا فيه الخير والبركة','أعاده الله علينا وعليكم باليمن والبركات','كل عام وأنتم إلى الله أقرب'],
+ed:['كل سنة وإنتم بخير، عيد سعيد عليكم وعلى أحبابكم','عيدكم مبارك، تقبل الله طاعاتكم'],
+bb:['الحمد لله على سلامة المولود، نبشركم بقدومه','وصلنا الضيف الصغير، ادعولنا'],
+mo:['إنتي الدنيا كلها يا أمي، كل سنة وإنتي بخير','ربنا يخليكي لينا ويبارك في عمرك'],
+nh:['بيتنا الجديد مفتوح لكم، تشرفونا','ندعوكم لحفل افتتاح بيتنا الجديد']};
+let aidx={};
+function altMsg(){const k=OC[S.o].k,a=[OC[S.o].m].concat(ALT[k]||[]);aidx[k]=((aidx[k]||0)+1)%a.length;S.msg=a[aidx[k]];$('msg').value=S.msg;draw()}
 function setPt(i){S.pt=i;draw()}function setF(i){S.ft=i;draw()}
 $("phf").addEventListener("change",e=>{const f=e.target.files[0];if(!f){PH=null;draw();return}const im=new Image();im.onload=()=>{PH=im;draw()};im.src=URL.createObjectURL(f)});
 function dleft(){if(!S.dd)return null;const d=new Date(S.dd+'T00:00:00'),n=new Date();n.setHours(0,0,0,0);return Math.round((d-n)/864e5)}
